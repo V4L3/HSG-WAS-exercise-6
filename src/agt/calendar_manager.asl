@@ -19,7 +19,22 @@ td("https://was-course.interactions.ics.unisg.ch/wake-up-ontology#CalendarServic
 */
 @start_plan
 +!start : td("https://was-course.interactions.ics.unisg.ch/wake-up-ontology#CalendarService", Url) <-
+    makeArtifact("calendar", "org.hyperagents.jacamo.artifacts.wot.ThingArtifact", [Url], CalId);
+    !read_calendar_state;
     .print("Hello world").
+
+@read_calendar_state_plan
++!read_calendar_state : true <-
+    readProperty("https://was-course.interactions.ics.unisg.ch/wake-up-ontology#ReadUpcomingEvent",  CalendarEventList);
+    .nth(0,CalendarEventList,CalendarState); 
+    -+upcoming_event(CalendarState); 
+    .wait(5000);
+    !read_calendar_state.
+
+@print_upcoming_event_plan
++upcoming_event(CalendarState) : true <-
+    .send(personal_assistant, tell, upcoming_event(CalendarState));
+    .print("Upcoming event: ", CalendarState).
 
 /* Import behavior of agents that work in CArtAgO environments */
 { include("$jacamoJar/templates/common-cartago.asl") }
